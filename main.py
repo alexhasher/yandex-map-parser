@@ -8,11 +8,10 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import pandas as pd
 
-count_of_units = 10
+count_of_units = 1000
 location = "москва"
 query = "гостиница"
 url = f'https://yandex.ru/maps/172/ufa/search/{location}%20{query}'
-# url = 'https://yandex.ru/maps/172/ufa/search/%D0%B3%D0%BE%D1%81%D1%82%D0%B8%D0%BD%D0%B8%D1%86%D1%8B/?ll=55.978058%2C54.733242&sll=55.958727%2C54.735147&sspn=0.148659%2C0.145423&z=12'
 
 #options
 options = webdriver.ChromeOptions()
@@ -26,12 +25,7 @@ s = Service(executable_path='/Users/aleksandrajmetov/PycharmProjects/pythonProje
 driver = webdriver.Chrome(service=s, options=options)
 driver.maximize_window()
 
-
-
-
 def get_source_html(url=url):
-
-
     try:
         driver.get(url=url)
         wait = WebDriverWait(driver, 5)  #Время ожидания на поиск новых элементов на странице
@@ -76,13 +70,12 @@ def get_source_html(url=url):
             try:
                 organization_name = soup.find("h1", {"class": "orgpage-header-view__header"}).text
                 keys['name'].append(organization_name)
-
             except:
                 keys['name'].append('null')
+
             try:
                 organization_phone = soup.find("div", {"class": "orgpage-phones-view__phone-number"}).text
                 keys['phone'].append(organization_phone.replace(" ", ""))
-
             except:
                 keys['phone'].append('null')
 
@@ -113,14 +106,12 @@ def get_source_html(url=url):
             try:
                 rate_count = soup.find('div', class_='business-header-rating-view__text _clickable')
                 keys['rate_count'].append(rate_count.text)
-
             except:
                 keys['rate_count'].append('null')
 
         # сохраняем собранный словарь в xlsx файл
         now = datetime.now()
         date_time_str = now.strftime("%Y-%m-%d_%H-%M-%S")  # сегодняшняя дата и время на имени Excel файла
-
         df = pd.DataFrame(keys)
         df.to_excel(f'{date_time_str}.xlsx')
         df
